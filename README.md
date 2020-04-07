@@ -134,3 +134,22 @@ see also: [complete  tutorial](https://www.howtoforge.com/tutorial/how-to-instal
 
 TIG stack is now ready.
 But the only measurements are the system metrics of the raspi host system itself.
+
+## Gather metrics from Kostal Plenticore power inverter via modbus
+Current power inverter from kostal have a modbus TCP interface.
+The [modbus interface definition](https://www.kostal-solar-electric.com/de-de/download/-/media/document%20library%20folder%20-%20kse/2018/08/30/08/53/ba_kostal_interface_modbus-tcp_sunspec.pdf)
+describes the available registers in chapter "3. MODBUS Register table".
+
+The modbus interface has to be enabled within the inverter webgui and the port to be used may be changed there.
+
+There is also a [modbus input plugin](https://github.com/influxdata/telegraf/tree/master/plugins/inputs/modbus) 
+available for telegraf.
+
+The tricky part is to use the correct byte ordering and datatype, which is not specified in the kostal interface documentation.
+All registers with type `Float` in the register table need to be defined with `data_type=FLOAT32-IEEE` and `byte_order="CDAB"`. 
+I found this detail in [netzkind's github project](https://github.com/netzkind/telegraf-kostal-modbus).
+ 
+Furthermore, two consecutive register addresses need to be given.
+
+Place file [modbus-kostal.conf](modbus-kostal/modbus-kostal.conf) into `/etc/telegraf/telegraf.d/`. 
+The `controller = "tcp://192.168.178.65:1502"` parameter needs to be adjusted to the inverter's actual ip adress and the configured modbus tcp port.
