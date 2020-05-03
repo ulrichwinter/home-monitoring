@@ -17,10 +17,31 @@ The following values need adjustment when setting up another instance:
 * `telegrafpassword`: the password for the telegraf user within the influx DB
 
 ## ubuntu on raspi
-1. [download ubuntu image and write it on sd card](https://ubuntu.com/download/raspberry-pi/thank-you?version=18.04.4&architecture=arm64+raspi3)
+1. Flash Ubuntu on a SD Card
+    * [Download Ubuntu Pi image](https://ubuntu.com/download/raspberry-pi)
+    * Current Version: ubuntu 20.04 LTS.
+    * For the Raspberyy Pi 4 the 64 bit edition is recommended.
+    * Follow the [tutorial for flashing the image ](https://ubuntu.com/tutorials/create-an-ubuntu-image-for-a-raspberry-pi-on-macos)
+      Hint: Writing to /dev/rdiskX instead of /dev/diskX will be 2-3 times faster.
+    * Eject sd card and put it into the Raspberry
 1. connect raspi to lan and power, no keyboard / mouse / monitor is required 
-1. use router / dhcp server to determine IP adress and define a local hostname (in this case: raspi4ubuntu)
-1. ssh into ubuntu as user `ubuntu` with password `ubuntu` - changing the initial passworde is automatically requested right after login.
+1. use router / dhcp server / arp cache  to determine IP address:
+    
+    My Raspberry Pi 4 uses the [OUI](http://standards-oui.ieee.org/oui.txt) DC-A6-32, so I can query the arp cache:  
+    ``` bash 
+   $ arp -a | grep dc:a6:32
+   ? (192.168.178.71) at dc:a6:32:50:9a:f9 on en0 ifscope [ethernet]
+   ```
+1. ssh into the remote raspi as user `ubuntu` with password `ubuntu` - changing the initial passworde is automatically requested right after login.
+    ``` bash
+   $ ssh  ubuntu@192.168.178.71
+   The authenticity of host '192.168.178.71 (192.168.178.71)' can't be established.
+   ECDSA key fingerprint is ...
+   Are you sure you want to continue connecting (yes/no/[fingerprint])? yes
+   ubuntu@192.168.178.71's password: ... 
+   You are required to change your password immediately (administrator enforced)
+   .... 
+    ```
 1. (optional) add public key as authorized ssh key
     ``` bash
     # from within your workstation terminal
@@ -35,7 +56,7 @@ The following values need adjustment when setting up another instance:
     sudo hostnamectl set-hostname raspi4ubuntu
     ```
 
-## install TIG-Stack (Telgraf, InfluxDB, Grafana) Stack
+## Install TIG-Stack (Telegraf, InfluxDB, Grafana)
 see also: [complete  tutorial](https://www.howtoforge.com/tutorial/how-to-install-tig-stack-telegraf-influxdb-and-grafana-on-ubuntu-1804/)
 1. InfluxDB
     ``` bash
